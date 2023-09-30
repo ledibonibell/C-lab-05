@@ -1,6 +1,8 @@
-﻿using System;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
-public class MyList<T>
+public class MyList<T> : IEnumerable<T>
 {
     private T[] items;
     private int count;
@@ -16,6 +18,15 @@ public class MyList<T>
         items = new T[initialValues.Length];
         Array.Copy(initialValues, items, initialValues.Length);
         count = initialValues.Length;
+    }
+
+    public MyList(IEnumerable<T> collection)
+    {
+        items = new T[0];
+        foreach (var item in collection)
+        {
+            Add(item);
+        }
     }
 
     public void Add(T item)
@@ -47,20 +58,33 @@ public class MyList<T>
     {
         get { return count; }
     }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        for (int i = 0; i < count; i++)
+        {
+            yield return items[i];
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
-class lab052
+class Program
 {
     static void Main()
     {
-        MyList<int> myList = new MyList<int>(1, 2, 3, 4, 5);
+        MyList<int> myList = new MyList<int> { 1, 2, 3, 4, 5 };
 
         myList.Add(678);
 
         Console.WriteLine($"Our elements i - 1, cheeeeck:\n");
-        for (int i = 0; i < myList.Count; i++)
+        foreach (var item in myList)
         {
-            Console.WriteLine($"Element {i}: {myList[i]}");
+            Console.WriteLine($"Element: {item}");
         }
 
         Console.WriteLine($"\nTotal number of elements: {myList.Count}");
